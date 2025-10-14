@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  typesense-node1:
+    image: typesense/typesense:27.1
+    container_name: typesense-node1
+    restart: always
+    environment:
+      - TYPESENSE_API_KEY=my-secret-key
+      - TYPESENSE_DATA_DIR=/data
+      - TYPESENSE_ENABLE_CORS=true
+      - TYPESENSE_LEADER=true
+      - TYPESENSE_CLUSTER_CONFIG=[{"host":"typesense-node1","port":"8108","protocol":"http"},{"host":"typesense-node2","port":"8110","protocol":"http"},{"host":"typesense-node3","port":"8112","protocol":"http"}]
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./data/node1:/data
+    networks:
+      - typesense-cluster
+
+  typesense-node2:
+    image: typesense/typesense:27.1
+    container_name: typesense-node2
+    restart: always
+    environment:
+      - TYPESENSE_API_KEY=my-secret-key
+      - TYPESENSE_DATA_DIR=/data
+      - TYPESENSE_ENABLE_CORS=true
+      - TYPESENSE_LEADER=false
+      - TYPESENSE_CLUSTER_CONFIG=[{"host":"typesense-node1","port":"8108","protocol":"http"},{"host":"typesense-node2","port":"8110","protocol":"http"},{"host":"typesense-node3","port":"8112","protocol":"http"}]
+    ports:
+      - "8110:8108"
+    volumes:
+      - ./data/node2:/data
+    networks:
+      - typesense-cluster
+
+  typesense-node3:
+    image: typesense/typesense:27.1
+    container_name: typesense-node3
+    restart: always
+    environment:
+      - TYPESENSE_API_KEY=my-secret-key
+      - TYPESENSE_DATA_DIR=/data
+      - TYPESENSE_ENABLE_CORS=true
+      - TYPESENSE_LEADER=false
+      - TYPESENSE_CLUSTER_CONFIG=[{"host":"typesense-node1","port":"8108","protocol":"http"},{"host":"typesense-node2","port":"8110","protocol":"http"},{"host":"typesense-node3","port":"8112","protocol":"http"}]
+    ports:
+      - "8112:8108"
+    volumes:
+      - ./data/node3:/data
+    networks:
+      - typesense-cluster
+
+networks:
+  typesense-cluster:
+    driver: bridge
